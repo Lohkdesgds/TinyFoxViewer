@@ -1,0 +1,9 @@
+[submodule "deps/nlohmann-json"]
+	path = deps/nlohmann-json
+	url = https://github.com/nlohmann/json
+[submodule "deps/AllegroCPP"]
+	path = deps/AllegroCPP
+	url = https://github.com/Lohkdesgds/AllegroCPP.git
+[submodule "deps/Lunaris-Console"]
+	path = deps/Lunaris-Console
+	url = https://github.com/LunarisLib/Lunaris-Console

@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="deps">
+      <UniqueIdentifier>{43671008-c69f-40a1-96ea-8a4f6c8f808d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="..\deps\AllegroCPP\src\config.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\display.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\display_mode.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\event_queue.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\events.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\file.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\font.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\locked_region.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\menu.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\monitor_info.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\native_dialog.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\thread.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\timer.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\transform.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\vertex.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\audio_all.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\audio_mixer.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\audio_sample.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\audio_sample_instance.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\audio_stream.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\audio_voice.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\bitmap.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="httpstuff.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="httpstuff.h" />
+  </ItemGroup>
+</Project>
