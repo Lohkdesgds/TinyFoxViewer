@@ -111,7 +111,7 @@
     <Allegro_AddonMemfile>true</Allegro_AddonMemfile>
     <Allegro_AddonFont>true</Allegro_AddonFont>
     <Allegro_AddonColor>true</Allegro_AddonColor>
-    <Allegro_AddonVideo>false</Allegro_AddonVideo>
+    <Allegro_AddonVideo>true</Allegro_AddonVideo>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)deps/Lunaris-Console;$(SolutionDir)deps/AllegroCPP/include;$(SolutionDir)deps/nlohmann-json/include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
@@ -125,7 +125,7 @@
     <Allegro_AddonMemfile>true</Allegro_AddonMemfile>
     <Allegro_AddonFont>true</Allegro_AddonFont>
     <Allegro_AddonColor>true</Allegro_AddonColor>
-    <Allegro_AddonVideo>false</Allegro_AddonVideo>
+    <Allegro_AddonVideo>true</Allegro_AddonVideo>
     <Allegro_LibraryType>StaticMonolithRelease</Allegro_LibraryType>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -169,7 +169,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <FloatingPointModel>Fast</FloatingPointModel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -186,7 +186,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FloatingPointModel>Fast</FloatingPointModel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -213,33 +213,41 @@
     <ClCompile Include="..\deps\AllegroCPP\src\event_queue.cpp" />
     <ClCompile Include="..\deps\AllegroCPP\src\file.cpp" />
     <ClCompile Include="..\deps\AllegroCPP\src\font.cpp" />
+    <ClCompile Include="..\deps\AllegroCPP\src\gif.cpp" />
+    <ClCompile Include="..\deps\AllegroCPP\src\keyboard.cpp" />
     <ClCompile Include="..\deps\AllegroCPP\src\locked_region.cpp" />
     <ClCompile Include="..\deps\AllegroCPP\src\menu.cpp" />
     <ClCompile Include="..\deps\AllegroCPP\src\monitor_info.cpp" />
+    <ClCompile Include="..\deps\AllegroCPP\src\mouse.cpp" />
     <ClCompile Include="..\deps\AllegroCPP\src\native_dialog.cpp" />
+    <ClCompile Include="..\deps\AllegroCPP\src\path.cpp" />
+    <ClCompile Include="..\deps\AllegroCPP\src\shader.cpp" />
+    <ClCompile Include="..\deps\AllegroCPP\src\state.cpp" />
     <ClCompile Include="..\deps\AllegroCPP\src\thread.cpp" />
     <ClCompile Include="..\deps\AllegroCPP\src\timer.cpp" />
     <ClCompile Include="..\deps\AllegroCPP\src\transform.cpp" />
+    <ClCompile Include="..\deps\AllegroCPP\src\utfstring.cpp" />
     <ClCompile Include="..\deps\AllegroCPP\src\vertex.cpp" />
+    <ClCompile Include="..\deps\AllegroCPP\src\video.cpp" />
     <ClCompile Include="httpstuff.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ClInclude Include="httpstuff.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="httpstuff.h" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\AllegroDeps.1.13.0\build\native\AllegroDeps.targets" Condition="Exists('..\packages\AllegroDeps.1.13.0\build\native\AllegroDeps.targets')" />
-    <Import Project="..\packages\Allegro.5.2.8\build\native\Allegro.targets" Condition="Exists('..\packages\Allegro.5.2.8\build\native\Allegro.targets')" />
+    <Import Project="..\packages\AllegroDeps.1.14.0\build\native\AllegroDeps.targets" Condition="Exists('..\packages\AllegroDeps.1.14.0\build\native\AllegroDeps.targets')" />
+    <Import Project="..\packages\Allegro.5.2.9\build\native\Allegro.targets" Condition="Exists('..\packages\Allegro.5.2.9\build\native\Allegro.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\AllegroDeps.1.13.0\build\native\AllegroDeps.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\AllegroDeps.1.13.0\build\native\AllegroDeps.targets'))" />
-    <Error Condition="!Exists('..\packages\Allegro.5.2.8\build\native\Allegro.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Allegro.5.2.8\build\native\Allegro.targets'))" />
+    <Error Condition="!Exists('..\packages\AllegroDeps.1.14.0\build\native\AllegroDeps.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\AllegroDeps.1.14.0\build\native\AllegroDeps.targets'))" />
+    <Error Condition="!Exists('..\packages\Allegro.5.2.9\build\native\Allegro.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Allegro.5.2.9\build\native\Allegro.targets'))" />
   </Target>
 </Project>

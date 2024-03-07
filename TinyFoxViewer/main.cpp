@@ -14,8 +14,8 @@ const std::string url_base = "api.tinyfox.dev";
 const std::string url_getter_img = "/img?animal=";
 const std::string app_title = "Lohk's TinyFox Integrated Image Viewer";
 
-const uint16_t menu_off = 7;
-const double slideshow_time = 30.0;
+const uint16_t menu_off = 30;
+//const double slideshow_time = 30.0;
 const double refresh_rate = 240.0;
 const double slow_refresh_rate = 30.0;
 
@@ -56,18 +56,20 @@ int main()
 
 	Text_log* __dbg = nullptr;
 	Monitor_info moninfo;
-	Display disp({ moninfo.get_width() * 0.8f, moninfo.get_height() * 0.8f }, app_title + " - Loading...", ALLEGRO_RESIZABLE, display_undefined_position);
+	Display disp(moninfo.get_width() * 0.8f, moninfo.get_height() * 0.8f, app_title + " - Loading...", ALLEGRO_RESIZABLE, display_undefined_position[0], display_undefined_position[1], 0, { display_option{ALLEGRO_VSYNC, 2, ALLEGRO_SUGGEST} });
 	Event_queue evqu;
-	Bitmap bmp(std::pair<int,int>{ 256, 256 });
+	Bitmap bmp(256, 256);
 	Timer max_disp_refresh(1.0 / refresh_rate);
-	bool menu_state = true;
+	//bool menu_state = true;
 	bool shown_menu_m_tip = false;
 	bool slideshow_auto = false;
 	double last_slideshow = 0.0;
 	size_t selected_img_src = 0;
 	float zoomin = 1.0f, smooth_zoomin = 1.0f;
 	std::pair<float,float> mouseoff = { 0.0f,0.0f };
+	double slideshow_time = 30.0;
 	bool display_can_upd = true;
+	bool is_display_masked = false;
 
 	evqu << disp;
 	evqu << Event_mouse();
@@ -85,28 +87,46 @@ int main()
 	}
 
 	// Check menu_off! (other stuff on menu must not be >= menu_off)
-	Menu menu(disp, { 
-		Menu_each_menu("File", 0, { 
-			Menu_each_default("Toggle &menu (M)", 1),
-			Menu_each_default("&Next (F5)", 4),
-			Menu_each_default("&Slideshow", 3, menu_flags::AS_CHECKBOX), 
-			Menu_each_default("Lower &Refresh Rate", 6, menu_flags::AS_CHECKBOX), 
-			Menu_each_empty(),
-			Menu_each_default("&Debug log toggle", 5, menu_flags::AS_CHECKBOX),
-			Menu_each_default("&Exit app", 2)
-		}), _men});
-	menu.show();
+	//Menu menu(disp, { 
+	//	Menu_each_menu("File", 0, { 
+	//		Menu_each_default("Toggle &menu (M)", 1),
+	//		Menu_each_default("&Next (F5)", 4),
+	//		Menu_each_default("&Slideshow", 3, menu_flags::AS_CHECKBOX), 
+	//		Menu_each_default("Lower &Refresh Rate", 6, menu_flags::AS_CHECKBOX), 
+	//		Menu_each_default("Toggle window&less", 7, menu_flags::AS_CHECKBOX), 
+	//		Menu_each_empty(),
+	//		Menu_each_default("&Debug log toggle", 5, menu_flags::AS_CHECKBOX),
+	//		Menu_each_default("&Exit app", 2)
+	//	}), _men});
+	//menu.show();
 
 	Menu popp(disp, Menu::menu_type::POPUP, {
-			Menu_each_default("Toggle &menu (M)", 1),
+			_men,
+			//Menu_each_default("Toggle &menu (M)", 1),
 			Menu_each_default("&Next (F5)", 4),
 			Menu_each_default("&Slideshow", 3, menu_flags::AS_CHECKBOX),
+			Menu_each_menu("Slideshow &times", 0, {
+				Menu_each_default("1 second", 10),
+				Menu_each_default("2 seconds", 11),
+				Menu_each_default("3 seconds", 12),
+				Menu_each_default("5 seconds", 13),
+				Menu_each_default("10 seconds", 14),
+				Menu_each_default("30 seconds", 15),
+				Menu_each_default("1 minute", 16),
+				Menu_each_default("2 minutes", 17),
+				Menu_each_default("5 minutes", 18),
+				Menu_each_default("10 minutes", 19),
+				Menu_each_default("20 minutes", 20),
+				Menu_each_default("30 minutes", 21),
+				Menu_each_default("1 hour", 22)
+			}),
 			Menu_each_default("Lower &Refresh Rate", 6, menu_flags::AS_CHECKBOX),
+			Menu_each_default("Toggle masked &fullscreen", 7, menu_flags::AS_CHECKBOX),
 			Menu_each_default("&Debug log toggle", 5, menu_flags::AS_CHECKBOX),
 			Menu_each_default("&Exit app", 2)
 		});
 
-	evqu << menu;
+	//evqu << menu;
 	evqu << popp;
 
 	bmp.set_as_target();
@@ -166,6 +186,18 @@ int main()
 			bmp = std::move(nbmp);
 		}
 
+		cout << "Ensuring image properties...";
+
+		bmp.set_as_target();
+		Locked_region lock(bmp, 0, 0);
+		for (int x = 0; x < bmp.get_width(); ++x) {
+			for (int y = 0; y < bmp.get_height(); ++y) {
+				if (const auto p = bmp.get_pixel(x, y); p.r == 0.0f && p.g == 0.0f && p.b == 0.0f)
+					bmp.put_pixel(x, y, al_map_rgb(1, 0, 0));
+			}
+		}
+		disp.set_as_target();
+
 		cout << "New image loaded!";
 		return true;
 	};
@@ -176,8 +208,10 @@ int main()
 				LINEDBUG("Loading next image...");
 				while (!_download_next_raw());
 				LINEDBUG("Successfully loaded new image. Setting stuff up and showing on screen soon.");
-				zoomin = 1.0f;
-				mouseoff.first = mouseoff.second = 0;
+				if (!is_display_masked) {
+					zoomin = 1.0f;
+					mouseoff.first = mouseoff.second = 0;
+				}
 				last_slideshow = al_get_time();
 				maketitl();
 				return;
@@ -185,6 +219,7 @@ int main()
 			catch (const std::exception& e) {
 				LINEDBUG("Error (exception): " << e.what());
 				cout << console::color::RED << "Failed to load new image: " << e.what();
+				if (selected_img_src >= opts.size()) selected_img_src = 0;
 			}
 			catch (...) {
 				LINEDBUG("Error (exception): uncaught");
@@ -228,15 +263,8 @@ int main()
 		if (std::exchange(display_can_upd, false)) {
 			disp.clear_to_color();
 			{
-				float scale = 1.0f;
-				if (1.0f * bmp.get_width() / bmp.get_height() > 1.0f * disp.get_width() / disp.get_height()) {
-					scale = disp.get_width() * 1.0f / bmp.get_width();
-				}
-				else {
-					scale = disp.get_height() * 1.0f / bmp.get_height();
-				}
-
-				bmp.draw({ mouseoff.first * smooth_zoomin + disp.get_width() * 0.5f, mouseoff.second * smooth_zoomin + disp.get_height() * 0.5f }, { bitmap_scale{scale * smooth_zoomin, scale * smooth_zoomin}, bitmap_rotate_transform{bmp.get_width() * 0.5f, bmp.get_height() * 0.5f, 0} });
+				//bmp.draw(mouseoff.first * smooth_zoomin + disp.get_width() * 0.5f, mouseoff.second * smooth_zoomin + disp.get_height() * 0.5f);
+				bmp.draw();
 			}
 			disp.flip();
 		}
@@ -247,14 +275,30 @@ int main()
 
 			switch (ev.get().type) {
 			case ALLEGRO_EVENT_TIMER:
+			{
 				display_can_upd |= (ev.get().timer.source == max_disp_refresh);
 				if (max_disp_refresh.get_speed() == 1.0 / refresh_rate) smooth_zoomin = ((39.0f * smooth_zoomin) + zoomin) / 40.0f;
 				else smooth_zoomin = ((4.0f * smooth_zoomin) + zoomin) / 5.0f;
+
+				float scale = 1.0f;
+				if (1.0f * bmp.get_width() / bmp.get_height() > 1.0f * disp.get_width() / disp.get_height()) {
+					scale = disp.get_width() * 1.0f / bmp.get_width();
+				}
+				else {
+					scale = disp.get_height() * 1.0f / bmp.get_height();
+				}
+
+				bmp.set_draw_properties({
+					bitmap_scale{scale * smooth_zoomin, scale * smooth_zoomin},
+					bitmap_rotate_transform{bmp.get_width() * 0.5f, bmp.get_height() * 0.5f, 0},
+					bitmap_position_and_flags{ mouseoff.first * smooth_zoomin + disp.get_width() * 0.5f, mouseoff.second * smooth_zoomin + disp.get_height() * 0.5f , 0 }
+				});
+			}
 				break;
 			case ALLEGRO_EVENT_DISPLAY_CLOSE:
 				LINEDBUG("Got DISPLAY_CLOSE event.");
-				menu.hide();
-				menu_state = false;
+				//menu.hide();
+				//menu_state = false;
 				disp.destroy();
 				continue;
 			case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
@@ -273,6 +317,7 @@ int main()
 					if (ev.get().mouse.dz) {
 						image_zoomcalc(ev.get().mouse.dz > 0);
 					}
+					bmp.set_draw_property(bitmap_position_and_flags{ mouseoff.first * smooth_zoomin + disp.get_width() * 0.5f, mouseoff.second * smooth_zoomin + disp.get_height() * 0.5f , 0 });
 				}
 				break;
 			case ALLEGRO_EVENT_KEY_DOWN:
@@ -281,6 +326,7 @@ int main()
 					LINEDBUG("Key ESCAPE was pressed, zoom and position reset.");
 					zoomin = 1.0f;
 					mouseoff.first = mouseoff.second = 0.0f;
+					bmp.set_draw_property(bitmap_position_and_flags{ mouseoff.first * smooth_zoomin + disp.get_width() * 0.5f, mouseoff.second * smooth_zoomin + disp.get_height() * 0.5f , 0 });
 					break;
 				case ALLEGRO_KEY_EQUALS:
 				case ALLEGRO_KEY_PAD_PLUS:
@@ -290,7 +336,7 @@ int main()
 				case ALLEGRO_KEY_PAD_MINUS:
 					image_zoomcalc(false);
 					break;
-				case ALLEGRO_KEY_M:
+				/*case ALLEGRO_KEY_M:
 					if (!std::exchange(menu_state, true)) {
 						LINEDBUG("Menu is now ENABLED (from key)");
 						menu.show();
@@ -300,7 +346,7 @@ int main()
 						menu_state = false;
 						menu.hide();
 					}
-					break;
+					break;*/
 				case ALLEGRO_KEY_F5:
 					download_next();
 					break;
@@ -313,14 +359,14 @@ int main()
 							LINEDBUG("Key combo for fullscreen toggle used.");
 
 							if (disp.get_flags() & ALLEGRO_FULLSCREEN_WINDOW) {
-								disp.resize({ 0.8f * moninfo.get_width(), 0.8f * moninfo.get_height() });
+								disp.resize(0.8f * moninfo.get_width(), 0.8f * moninfo.get_height());
 								disp.set_flag(ALLEGRO_FULLSCREEN_WINDOW, false);
 							}
 							else {
-								menu.hide();
-								menu_state = false;
+								//menu.hide();
+								//menu_state = false;
 								disp.flip();
-								disp.resize({ moninfo.get_width(), moninfo.get_height() });
+								disp.resize(moninfo.get_width(), moninfo.get_height());
 								disp.set_flag(ALLEGRO_FULLSCREEN_WINDOW, true);
 							}
 							al_rest(0.1);
@@ -337,7 +383,7 @@ int main()
 				{
 					Menu_event mev(ev.get());
 					switch (mev.get_id()) {
-					case 1: // Hide menu for a while
+					/*case 1: // Hide menu for a while
 						LINEDBUG("Toggle menu menu button triggered.");
 						if (!std::exchange(shown_menu_m_tip, true)) message_box("You've hidden the menu!", "To show/toggle it again, press M on your keyboard or use right click menu", "", "", ALLEGRO_MESSAGEBOX_WARN, disp);
 						if (!menu_state) {
@@ -348,18 +394,18 @@ int main()
 							menu.hide();
 							menu_state = false;
 						}
-						break;
+						break;*/
 					case 2: // Exit
 						LINEDBUG("Exit menu button triggered.");
-						menu.hide();
-						menu_state = false;
+						//menu.hide();
+						//menu_state = false;
 						disp.destroy();
 						break;
 					case 3: // Slideshow
 						slideshow_auto = !slideshow_auto;
 						last_slideshow = al_get_time();
 
-						menu.find_id(mev.get_id()).set_flags(slideshow_auto ? menu_flags::CHECKED : static_cast<menu_flags>(0));
+						//menu.find_id(mev.get_id()).set_flags(slideshow_auto ? menu_flags::CHECKED : static_cast<menu_flags>(0));
 						popp.find_id(mev.get_id()).set_flags(slideshow_auto ? menu_flags::CHECKED : static_cast<menu_flags>(0));
 
 						LINEDBUG("Slideshow menu button triggered. It is now: " << (slideshow_auto ? "ENABLED" : "DISABLED"));
@@ -375,7 +421,7 @@ int main()
 
 						LINEDBUG("Debug window enabled (this)");
 
-						menu.find_id(mev.get_id()).set_flags(__dbg ? menu_flags::CHECKED : static_cast<menu_flags>(0));
+						//menu.find_id(mev.get_id()).set_flags(__dbg ? menu_flags::CHECKED : static_cast<menu_flags>(0));
 						popp.find_id(mev.get_id()).set_flags(__dbg ? menu_flags::CHECKED : static_cast<menu_flags>(0));
 						break;
 					case 6: // toggle refresh rate
@@ -383,20 +429,84 @@ int main()
 							LINEDBUG("Refresh rate button pressed. Normal refresh rate set (240 Hz)");
 							max_disp_refresh.set_speed(1.0 / refresh_rate);
 
-							menu.find_id(mev.get_id()).set_flags(static_cast<menu_flags>(0));
+							//menu.find_id(mev.get_id()).set_flags(static_cast<menu_flags>(0));
 							popp.find_id(mev.get_id()).set_flags(static_cast<menu_flags>(0));
 						}
 						else {
 							LINEDBUG("Refresh rate button pressed. Slow refresh rate set (30 Hz)");
 							max_disp_refresh.set_speed(1.0 / slow_refresh_rate);
 
-							menu.find_id(mev.get_id()).set_flags(menu_flags::CHECKED);
+							//menu.find_id(mev.get_id()).set_flags(menu_flags::CHECKED);
 							popp.find_id(mev.get_id()).set_flags(menu_flags::CHECKED);
 						}
 						break;
+					case 7:
+						{
+							if (is_display_masked = !is_display_masked) {
+								//disp.set_flag(ALLEGRO_FRAMELESS, true);
+								disp.set_flag(ALLEGRO_FULLSCREEN_WINDOW, true);
+								disp.make_window_masked(al_map_rgb(0, 0, 0));
+
+								//menu.find_id(mev.get_id()).set_flags(menu_flags::CHECKED);
+								popp.find_id(mev.get_id()).set_flags(menu_flags::CHECKED);
+							}
+							else {
+								//disp.set_flag(ALLEGRO_FRAMELESS, false);
+								disp.set_flag(ALLEGRO_FULLSCREEN_WINDOW, false);
+								disp.unmake_window_masked();
+
+								//menu.find_id(mev.get_id()).set_flags(static_cast<menu_flags>(0));
+								popp.find_id(mev.get_id()).set_flags(static_cast<menu_flags>(0));
+							}
+						}
+						break;
+
+					case 10: // Menu_each_default("1 second", 10),
+						slideshow_time = 1.0;
+						break;
+					case 11: // Menu_each_default("2 seconds", 11),
+						slideshow_time = 2.0;
+						break;
+					case 12: // Menu_each_default("3 seconds", 12),
+						slideshow_time = 3.0;
+						break;
+					case 13: // Menu_each_default("5 seconds", 13),
+						slideshow_time = 5.0;
+						break;
+					case 14: // Menu_each_default("10 seconds", 14),
+						slideshow_time = 10.0;
+						break;
+					case 15: // Menu_each_default("30 seconds", 15),
+						slideshow_time = 30.0;
+						break;
+					case 16: // Menu_each_default("1 minute", 16),
+						slideshow_time = 60.0;
+						break;
+					case 17: // Menu_each_default("2 minutes", 17),
+						slideshow_time = 120.0;
+						break;
+					case 18: // Menu_each_default("5 minutes", 18),
+						slideshow_time = 300.0;
+						break;
+					case 19: // Menu_each_default("10 minutes", 19),
+						slideshow_time = 600.0;
+						break;
+					case 20: // Menu_each_default("20 minutes", 20),
+						slideshow_time = 1200.0;
+						break;
+					case 21: // Menu_each_default("30 minutes", 21),
+						slideshow_time = 1800.0;
+						break;
+					case 22: // Menu_each_default("1 hour", 22)
+						slideshow_time = 3600.0;
+						break;
 					default:
 						{
+							if (mev.get_id() < menu_off) break;
+
 							selected_img_src = static_cast<size_t>(mev.get_id()) - static_cast<size_t>(menu_off) - 1;
+							if (selected_img_src >= opts.size()) break;
+
 							LINEDBUG("Selected from list on menu: #" << std::to_string(selected_img_src));
 							cout << console::color::GRAY << "Got menu event transl #" << selected_img_src;
 
@@ -405,14 +515,14 @@ int main()
 
 							LINEDBUG("Item selected is now " << sel << ". Refreshing menu...");
 
-							for (auto& i : opts) {
+							/*for (auto& i : opts) {
 								if (i != sel) {
 									menu.find(upper_first(i)).unset_flags(menu_flags::CHECKED);
 								}
 								else {
 									menu.find(upper_first(i)).set_flags(menu_flags::CHECKED);
 								}
-							}
+							}*/
 
 							LINEDBUG("Menu is up to date now. New image will be loaded soon.");
 							download_next();

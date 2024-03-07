@@ -7,6 +7,25 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="httpstuff.cpp" />
+    <ClCompile Include="..\deps\AllegroCPP\src\audio_mixer.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\audio_sample.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\audio_sample_instance.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\audio_stream.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\audio_voice.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\bitmap.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
     <ClCompile Include="..\deps\AllegroCPP\src\config.cpp">
       <Filter>deps</Filter>
     </ClCompile>
@@ -28,6 +47,12 @@
     <ClCompile Include="..\deps\AllegroCPP\src\font.cpp">
       <Filter>deps</Filter>
     </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\gif.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\keyboard.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
     <ClCompile Include="..\deps\AllegroCPP\src\locked_region.cpp">
       <Filter>deps</Filter>
     </ClCompile>
@@ -37,7 +62,19 @@
     <ClCompile Include="..\deps\AllegroCPP\src\monitor_info.cpp">
       <Filter>deps</Filter>
     </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\mouse.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
     <ClCompile Include="..\deps\AllegroCPP\src\native_dialog.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\path.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\shader.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\state.cpp">
       <Filter>deps</Filter>
     </ClCompile>
     <ClCompile Include="..\deps\AllegroCPP\src\thread.cpp">
@@ -49,36 +86,23 @@
     <ClCompile Include="..\deps\AllegroCPP\src\transform.cpp">
       <Filter>deps</Filter>
     </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\utfstring.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
     <ClCompile Include="..\deps\AllegroCPP\src\vertex.cpp">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\AllegroCPP\src\video.cpp">
       <Filter>deps</Filter>
     </ClCompile>
     <ClCompile Include="..\deps\AllegroCPP\src\audio_all.cpp">
       <Filter>deps</Filter>
     </ClCompile>
-    <ClCompile Include="..\deps\AllegroCPP\src\audio_mixer.cpp">
-      <Filter>deps</Filter>
-    </ClCompile>
-    <ClCompile Include="..\deps\AllegroCPP\src\audio_sample.cpp">
-      <Filter>deps</Filter>
-    </ClCompile>
-    <ClCompile Include="..\deps\AllegroCPP\src\audio_sample_instance.cpp">
-      <Filter>deps</Filter>
-    </ClCompile>
-    <ClCompile Include="..\deps\AllegroCPP\src\audio_stream.cpp">
-      <Filter>deps</Filter>
-    </ClCompile>
-    <ClCompile Include="..\deps\AllegroCPP\src\audio_voice.cpp">
-      <Filter>deps</Filter>
-    </ClCompile>
-    <ClCompile Include="..\deps\AllegroCPP\src\bitmap.cpp">
-      <Filter>deps</Filter>
-    </ClCompile>
-    <ClCompile Include="httpstuff.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="httpstuff.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
