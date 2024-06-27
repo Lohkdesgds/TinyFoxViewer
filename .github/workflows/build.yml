@@ -8,7 +8,7 @@ name: MSBuild
 on:
   push:
     branches: 
-      - feature*
+      - feature/*
       - master
 
 env:
