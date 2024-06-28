@@ -64,7 +64,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          body_path: 'Latest release! Works as expected. HTTP is used. May break if HTTPS is required by the host in the future.'
+          body_path: release_changelog.txt
           tag_name: ${{ github.ref_name }}
           files: |
             release_windows/TinyFoxViewer.exe
